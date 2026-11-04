@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import pxToViewport from 'postcss-px-to-viewport-8-plugin'
-import { VitePWA } from 'vite-plugin-pwa' // 🌟 1. 引入 PWA 插件
+// import { VitePWA } from 'vite-plugin-pwa' // 🌟 1. 引入 PWA 插件
 
 export default defineConfig({
   plugins: [
