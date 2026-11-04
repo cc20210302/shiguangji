@@ -1,0 +1,251 @@
+/* ─────────────────────────  首页  ───────────────────────── */
+.home-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* height: 36px; */
+  /* margin-top: 20px; */
+  padding: 0 var(--gutter);
+  position: sticky;
+  top: 0;
+  z-index: 50; /* 确保它盖在其他内容上面 */
+  background-color: var(--bg);
+  padding-top: 20px;
+}
+
+.home-head__brand {
+  font-size: 20px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--ink);
+}
+
+.home-head__date {
+  margin-top: 3px;
+  font-size: var(--fs-13);
+  line-height: 22px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.empty-state--home {
+  margin-top: 50px;
+}
+
+/* ─────────────────────────  日历  ───────────────────────── */
+/* 其他月份的日期变灰 */
+.cal-day.is-outside .cal-day__num {
+  color: #949995; /* 或者用你项目里的浅灰色变量，比如 var(--gray-300) */
+  opacity: 1;
+}
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px 0 16px;
+}
+
+/* 顺便清除 h2 默认的上下边距，防止把盒子撑高 */
+.cal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* 把截图里那个黑色方框的按钮样式变干净一点 */
+.cal-header button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 21px;
+  margin-top: 20px;
+  padding: 0 var(--gutter);
+}
+
+.cal-head__month {
+  font-size: var(--fs-15);
+  line-height: 21px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-nav {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: background 0.2s ease;
+}
+
+.cal-nav:active {
+  background: var(--mint);
+}
+
+.cal-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-top: 24px;
+  padding: 0 var(--gutter);
+}
+
+.cal-week__cell {
+  text-align: center;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--muted-2);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 24px;
+  margin-top: 24px;
+  padding: 0 var(--gutter);
+}
+
+.cal-day {
+  position: relative;
+  height: 21px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-14);
+  line-height: 21px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-day__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  transition: background 0.18s ease;
+}
+
+.cal-day.is-today .cal-day__ring {
+  background: var(--mint);
+}
+
+.cal-day.is-selected .cal-day__ring {
+  background: var(--green);
+}
+
+.cal-day.is-selected {
+  color: #fff;
+  font-weight: 600;
+}
+
+.cal-day.is-outside {
+  color: var(--muted-2);
+  opacity: 0.45;
+}
+
+.cal-day__num {
+  position: relative;
+  z-index: 1;
+}
+
+.cal-day__dot {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  z-index: 1;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: var(--green);
+}
+
+.cal-day.is-selected .cal-day__dot {
+  background: var(--green);
+}
+
+.empty-state--calendar {
+  margin-top: 10px;
+}
+
+/* 日历里的区块标题与网格间距 32（设计稿 355 → 387） */
+.section-title--calendar {
+  margin-top: 32px;
+}
+
+/* ─────────────────────────  添加事件  ───────────────────────── */
+.form-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 45px;
+}
+
+.form-page__actions {
+  margin-top: auto;
+  padding: 24px var(--gutter) 0;
+}
+
+/* 弹层背后的静态表单（选择日期 / 选择记录方式） */
+.form-page.is-backdrop {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─────────────────────────  添加成功  ───────────────────────── */
+.success-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 141px var(--gutter) 0;
+  text-align: center;
+}
+
+.success-art {
+  width: 176px;
+  height: 176px;
+}
+
+.success-title {
+  margin-top: 0;
+  font-size: var(--fs-14);
+  font-weight: 600;
+  line-height: 21px;
+  color: var(--ink);
+}
+
+.success-hint {
+  margin-top: 10px;
+  font-size: var(--fs-13);
+  line-height: 21px;
+  color: var(--muted);
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 260px;
+  margin-top: 48px;
+}
