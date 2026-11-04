@@ -8,21 +8,21 @@ html,
 body,
 #root {
   margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    /* 这里可以放你页面的默认底色，比如浅米色 */
-    background-color: #f8f7f2; 
+  padding: 0;
+  width: 100%;
+  height: 100%; /* 🌟 严格 100% */
+  background-color: #f8f7f2; 
 }
+
 html, body {
-  /* 🌟 清除移动端点击时的高亮色块 */
   -webkit-tap-highlight-color: transparent; 
 }
+
 button, a, input, textarea {
-  /* 🌟 去掉点击后残留的轮廓线 */
   outline: none;
   -webkit-focus-ring-color: transparent;
 }
+
 body {
   margin: 0;
   background: #ece9e1 radial-gradient(120% 90% at 50% 0%, #f4f2ea 0%, #e6e2d8 100%);
@@ -41,10 +41,7 @@ button {
   cursor: pointer;
 }
 
-h1,
-h2,
-h3,
-p {
+h1, h2, h3, p {
   margin: 0;
 }
 
@@ -59,7 +56,7 @@ ul {
   outline-offset: 2px;
 }
 
-/* 手机外框：桌面端居中显示 390 × 844 设计尺寸 */
+/* 手机外框：桌面端居中显示 */
 .device-shell {
   min-height: 100%;
   display: grid;
@@ -71,8 +68,7 @@ ul {
   position: relative;
   width: 390px;
   height: 844px;
-  /* 桌面窗口较矮时收窄外框高度，页面内部滚动 */
-  max-height: calc(100dvh - 48px);
+  max-height: calc(100vh - 48px); /* 桌面端使用 vh */
   overflow: hidden;
   border-radius: 42px;
   background: var(--bg);
@@ -88,7 +84,7 @@ ul {
 
   .device {
     width: 100vw;
-    height: 100dvh;
+    height: 100%; /* 🌟 关键修改：弃用 100dvh，直接 100% 继承 html/body 的高度 */
     max-height: none;
     border-radius: 0;
     box-shadow: none;
@@ -98,14 +94,13 @@ ul {
 /* 手机内通用布局 */
 .phone {
   position: relative;
-  /* 🌟 关键 1：高度撑满父级（.device），并隐藏溢出 */
-  height: 100%; 
-  /* 🌟 关键 2：变成 Flex 列布局，让内部元素上下排列 */
+  height: 100%; /* 🌟 撑满 .device */
   display: flex; 
   flex-direction: column;
   overflow: hidden; 
-  background-color: #f8f7f2; /* 底色铺满 */
+  background-color: #f8f7f2; 
 }
+
 .phone--tinted {
   background: var(--bg);
 }
@@ -113,8 +108,8 @@ ul {
 .screen {
   position: relative;
   z-index: 1;
-  flex: 1; /* 占据所有剩余空间 */
-  min-height: 0; /* 必须加，防止内容撑破 flex 容器 */
+  flex: 1; /* 🌟 占据 .phone 剩余的所有空间 */
+  min-height: 0; /* 🌟 防止 flex 子项内容溢出撑破高度 */
   overflow-x: hidden;
   overflow-y: auto; /* 内部滚动 */
   overscroll-behavior: contain;
@@ -122,28 +117,28 @@ ul {
   display: flex;
   flex-direction: column;
   
-  /* 安全区适配 */
-  padding-top: env(safe-area-inset-top, 20px); 
+  /* 🌟 关键修改：把默认的 20px 改成 0px。如果是全屏沉浸式，状态栏会盖住内容，需要 0px 配合内部元素的 margin/padding */
+  padding-top: env(safe-area-inset-top, 0px); 
 }
-/* 详情页的顶部背景层（.detail-bg），让它向上撑满状态栏的高度 */
-.detail-bg {
-  position: absolute;
-  /* 向上延伸，盖住状态栏 */
-  top: calc(-1 * env(safe-area-inset-top, 0px)); 
-  left: 0;
-  right: 0;
-  /* 高度加上安全区的额外高度 */
-  height: calc(319px + env(safe-area-inset-top, 0px)); 
-  background: var(--theme-bg, var(--mint)); 
-  z-index: 0;
-  transition: background-color 0.3s ease;
-}
+
 .screen::-webkit-scrollbar {
   display: none;
 }
 
 .screen--static {
   overflow: hidden;
+}
+
+/* 详情页的顶部背景层 */
+.detail-bg {
+  position: absolute;
+  top: calc(-1 * env(safe-area-inset-top, 0px)); 
+  left: 0;
+  right: 0;
+  height: calc(319px + env(safe-area-inset-top, 0px)); 
+  background: var(--theme-bg, var(--mint)); 
+  z-index: 0;
+  transition: background-color 0.3s ease;
 }
 
 /* 通用按钮 */
@@ -171,7 +166,6 @@ ul {
 .btn--primary {
   background: var(--green);
   color: var(--surface);
-  
 }
 
 .btn--primary:active {
@@ -187,7 +181,6 @@ ul {
 .btn--soft {
   background: #B2595D;
   color: var(--surface);
-  
 }
 
 .btn--block {
@@ -207,9 +200,7 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }

@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { CountdownEvent, EventCategory, RecordMode } from '../data/events'
-import { SEED_EVENTS } from '../data/events'
 import { toISODate } from '../lib/date'
 
 const STORAGE_KEY = 'shiguangji.events.v1'
@@ -51,14 +50,17 @@ const isEvent = (value: unknown): value is CountdownEvent => {
 
 const loadEvents = (): CountdownEvent[] => {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return SEED_EVENTS
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return SEED_EVENTS
-    const list = parsed.filter(isEvent)
-    return list
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(isEvent);
   } catch {
-    return SEED_EVENTS
+    return [];
   }
 }
 
