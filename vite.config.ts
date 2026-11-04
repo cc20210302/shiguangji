@@ -7,29 +7,29 @@ export default defineConfig({
   plugins: [
     react(),
     // 🌟 2. 配置 PWA 插件
-    VitePWA({
-      registerType: 'autoUpdate',
-      manifest: {
-        name: '时光记',
-        short_name: '时光记',
-        description: '记录每一个重要的日子',
-        theme_color: '#f8f7f2',
-        background_color: '#f8f7f2',
-        display: 'standalone', // 核心：全屏运行，没有浏览器地址栏
-        icons: [
-          {
-            src: 'pwa-192x192.png', // 对应 public 目录下的文件名
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      }
-    })
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   manifest: {
+    //     name: '时光记',
+    //     short_name: '时光记',
+    //     description: '记录每一个重要的日子',
+    //     theme_color: '#f8f7f2',
+    //     background_color: '#f8f7f2',
+    //     display: 'standalone', // 核心：全屏运行，没有浏览器地址栏
+    //     icons: [
+    //       {
+    //         src: 'pwa-192x192.png', // 对应 public 目录下的文件名
+    //         sizes: '192x192',
+    //         type: 'image/png'
+    //       },
+    //       {
+    //         src: 'pwa-512x512.png',
+    //         sizes: '512x512',
+    //         type: 'image/png'
+    //       }
+    //     ]
+    //   }
+    // })
   ],
   server: {
     host: '0.0.0.0',
