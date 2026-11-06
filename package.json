@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "时光记 —— 重要日子记录与倒数 (Figma: NcHGrNQdp2f6cK7RGXbYuK)",
+  "description": "时光记 —— 好日子值得记录 (Figma: NcHGrNQdp2f6cK7RGXbYuK)",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -14,15 +14,18 @@
     "@capacitor/android": "^8.6.0",
     "@capacitor/cli": "^8.6.0",
     "@capacitor/core": "^8.6.0",
+    "@capacitor/splash-screen": "^8.0.2",
+    "capacitor-android-system-bars": "^2.1.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.0"
   },
   "overrides": {
-      "esbuild": "0.27.4",
-	  "babel-plugin-polyfill-corejs3": "0.14.0"
-    },
+    "esbuild": "0.27.4",
+    "babel-plugin-polyfill-corejs3": "0.14.0"
+  },
   "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-legacy": "^7.2.1",

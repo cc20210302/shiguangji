@@ -10,8 +10,10 @@ body,
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%; /* 🌟 严格 100% */
-  background-color: #f8f7f2; 
+  height: 100%;
+  /* 🌟 状态栏透出的就是这个背景色 */
+  background-color: var(--app-bg-color, #f8f7f2); 
+  overflow: hidden; 
 }
 
 html, body {
@@ -21,11 +23,11 @@ html, body {
 button, a, input, textarea {
   outline: none;
   -webkit-focus-ring-color: transparent;
+  touch-action: manipulation; 
 }
 
 body {
   margin: 0;
-  background: #ece9e1 radial-gradient(120% 90% at 50% 0%, #f4f2ea 0%, #e6e2d8 100%);
   color: var(--ink);
   font-family: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Hiragino Sans GB",
     "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -34,6 +36,8 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* 🚨 已删除 body::before 遮挡层 */
 
 button {
   font: inherit;
@@ -68,7 +72,7 @@ ul {
   position: relative;
   width: 390px;
   height: 844px;
-  max-height: calc(100vh - 48px); /* 桌面端使用 vh */
+  max-height: calc(100vh - 48px); 
   overflow: hidden;
   border-radius: 42px;
   background: var(--bg);
@@ -84,7 +88,7 @@ ul {
 
   .device {
     width: 100vw;
-    height: 100%; /* 🌟 关键修改：弃用 100dvh，直接 100% 继承 html/body 的高度 */
+    height: 100%; 
     max-height: none;
     border-radius: 0;
     box-shadow: none;
@@ -93,13 +97,19 @@ ul {
 
 /* 手机内通用布局 */
 .phone {
-  position: relative;
-  height: 100%; /* 🌟 撑满 .device */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex; 
   flex-direction: column;
   overflow: hidden; 
-  background-color: #f8f7f2; 
+  /* 🌟 依靠这里的背景色透传 */
+  background-color: var(--app-bg-color, #f8f7f2); 
 }
+
+/* 🚨 已删除 .phone::before 遮挡层 */
 
 .phone--tinted {
   background: var(--bg);
@@ -108,17 +118,18 @@ ul {
 .screen {
   position: relative;
   z-index: 1;
-  flex: 1; /* 🌟 占据 .phone 剩余的所有空间 */
-  min-height: 0; /* 🌟 防止 flex 子项内容溢出撑破高度 */
+  flex: 1; 
+  min-height: 0; 
   overflow-x: hidden;
-  overflow-y: auto; /* 内部滚动 */
+  overflow-y: auto; 
   overscroll-behavior: contain;
   scrollbar-width: none;
   display: flex;
   flex-direction: column;
   
-  /* 🌟 关键修改：把默认的 20px 改成 0px。如果是全屏沉浸式，状态栏会盖住内容，需要 0px 配合内部元素的 margin/padding */
-  padding-top: env(safe-area-inset-top, 0px); 
+  /* 🌟 依靠这个让内容避开状态栏，绝对不会遮挡标题 */
+  padding-top: 24px; 
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .screen::-webkit-scrollbar {
@@ -132,10 +143,10 @@ ul {
 /* 详情页的顶部背景层 */
 .detail-bg {
   position: absolute;
-  top: calc(-1 * env(safe-area-inset-top, 0px)); 
+  top: 0; /* 🌟 去掉负数 top */
   left: 0;
   right: 0;
-  height: calc(319px + env(safe-area-inset-top, 0px)); 
+  height: 319px; /* 🌟 恢复原有高度 */
   background: var(--theme-bg, var(--mint)); 
   z-index: 0;
   transition: background-color 0.3s ease;

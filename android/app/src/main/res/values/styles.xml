@@ -13,10 +13,23 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+
+        <!-- 🌟 设为透明 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!-- 🌟 强制图标为深色（黑色），因为你页面是浅色底 -->
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- 🚨 绝对不要有 windowOptOutEdgeToEdgeEnforcement 这一行！ -->
     </style>
 
-
-    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+    <!-- 🌟 关键修改：不要用 Theme.SplashScreen，改用 AppTheme.NoActionBar -->
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+        <!-- 设为全屏图片，不压缩 -->
         <item name="android:background">@drawable/splash</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

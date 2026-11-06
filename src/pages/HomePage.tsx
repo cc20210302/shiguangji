@@ -1,7 +1,7 @@
+import { useEffect } from 'react' // 🌟 1. 引入 useEffect
 import { useNavigate } from 'react-router-dom'
 import { EventRow } from '../components/EventRow'
 import { CalendarStampArt, StickerScene } from '../components/Illustrations'
-// 🌟 删掉了重复的引入，保留这个包含 IconPlus 的即可
 import { CategoryIcon, IconPlus } from '../components/Icons'
 import { PageShell } from '../components/PageShell'
 import { CATEGORIES, CATEGORY_META } from '../data/events'
@@ -9,11 +9,21 @@ import { countdown, sortByUpcoming } from '../lib/countdown'
 import { cx } from '../lib/cx'
 import { TODAY, formatHeaderDate, formatMonthDayCN, parseISODate } from '../lib/date'
 import { createDraft, useEvents } from '../store/EventsProvider'
+// 🌟 2. 引入状态栏控制函数
+import { updateAppTheme } from '../lib/statusBar'
 
 /** 首页（设计稿 1:96 有数据 / 38:1094 空状态） */
 export default function HomePage() {
   const navigate = useNavigate()
   const { events, startDraft } = useEvents()
+
+  useEffect(() => {
+    // 🌟 定义一个同步函数，在内部调用 async 函数
+    const initTheme = async () => {
+      await updateAppTheme('#f8f7f2')
+    }
+    initTheme()
+  }, [])
 
   const sorted = sortByUpcoming(events)
   const upcoming = sorted.find((event) => !countdown(event).isPast)

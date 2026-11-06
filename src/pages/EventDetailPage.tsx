@@ -8,7 +8,7 @@ import { formatDateCN, parseISODate } from '../lib/date'
 import { useGoBack } from '../lib/navigation'
 import { useEvents } from '../store/EventsProvider'
 // 🌟 引入我们刚写的颜色工具函数
-import { setSystemThemeColor } from '../lib/theme' 
+import { updateAppTheme } from '../lib/statusBar' // 🌟 使用控制原生状态栏的工具
 
 import cakeImg from '../assets/cake.png'
 import heartImg from '../assets/heart.png'
@@ -27,7 +27,7 @@ export default function EventDetailPage() {
 
   const event = eventId ? getEvent(eventId) : undefined
 
-  // 🌟 动态修改手机状态栏的颜色
+  // 🌟 动态修改手机状态栏的颜色和网页底色
   useEffect(() => {
     const colorMap: Record<string, string> = {
       birthday: '#DCEBDD',
@@ -35,15 +35,21 @@ export default function EventDetailPage() {
       festival: '#F9E6D8',
       other: '#F2F2F2',
     }
-    
-    // 如果找不到 event，或者 category 不在列表中，使用默认底色
     const color = event ? (colorMap[event.category] || '#f8f7f2') : '#f8f7f2'
-    setSystemThemeColor(color)
-
-    // 页面卸载时，恢复全局默认的米色背景
-    return () => setSystemThemeColor('#f8f7f2')
+  
+    const syncTheme = async () => {
+      await updateAppTheme(color)
+    }
+    syncTheme()
+  
+    // 离开页面时恢复默认
+    return () => {
+      const resetTheme = async () => {
+        await updateAppTheme('#f8f7f2')
+      }
+      resetTheme()
+    }
   }, [event])
-
   if (!event) {
     return (
       <PageShell>

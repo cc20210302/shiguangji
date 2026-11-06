@@ -6,7 +6,7 @@ import { cx } from '../lib/cx'
 import { parseISODate, toISODate } from '../lib/date'
 import { useGoBack } from '../lib/navigation'
 import { useEvents } from '../store/EventsProvider'
-import { showToast } from '../lib/toast' // 🌟 引入 Toast
+import { showToast } from '../lib/toast'
 import { BackButton } from './BackButton'
 import { FieldCard } from './FieldCard'
 import {
@@ -27,12 +27,13 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
   const goBack = useGoBack()
   const { draft, patchDraft, addEvent, updateEvent, resetDraft } = useEvents()
 
+  const isTitleEmpty = !draft.title.trim()
+
   const handleCategory = (next: EventCategory) => {
     patchDraft({ category: next })
     navigate(`/add/${next}`, { replace: true })
   }
 
-  // 🌟 修改：直接拦截并调用 Toast
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     if (val.length > 20) {
@@ -54,6 +55,8 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
   }
 
   const handleSave = () => {
+    if (isTitleEmpty) return
+
     if (draft.id) {
       updateEvent(draft.id, draft)
       goBack()
@@ -74,34 +77,55 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
       <SegmentedTabs value={draft.category} onChange={handleCategory} />
 
       <div className="fields">
-        {/* 🌟 去掉了包裹层，恢复原始结构 */}
         <FieldCard label="事件名称" icon={<IconTag size={20} />}>
           <input
             className="field__input"
             type="text"
             value={draft.title}
             placeholder={`例如：${CATEGORY_META[draft.category].example}`}
-            onChange={handleTitleChange} // 🌟 挂载拦截逻辑
+            onChange={handleTitleChange}
             tabIndex={backdrop ? -1 : undefined}
           />
         </FieldCard>
 
-        <FieldCard label="日期" icon={<IconDate size={20} />} onClick={() => navigate('/date-picker')}>
-          {toISODate(parseISODate(draft.date))}
-          <span className="field__caret">
-            <IconChevronDown size={16} />
-          </span>
+        {/* 🌟 修改：把 onClick 移到内部 div，并让内容行横向撑满 */}
+        <FieldCard label="日期" icon={<IconDate size={20} />}>
+          <div
+            onClick={() => navigate('/date-picker')}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              cursor: 'pointer',
+            }}
+          >
+            {toISODate(parseISODate(draft.date))}
+            <span className="field__caret" style={{ float: 'none', margin: 0 }}>
+              <IconChevronDown size={16} />
+            </span>
+          </div>
         </FieldCard>
 
         <FieldCard
           label="记录方式"
           icon={<IconRepeat size={20} />}
-          onClick={() => navigate('/record-mode')}
         >
-          {recordModeLabel(draft.recordMode, RECORD_MODES)}
-          <span className="field__caret">
-            <IconChevronDown size={16} />
-          </span>
+          <div
+            onClick={() => navigate('/record-mode')}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              cursor: 'pointer',
+            }}
+          >
+            {recordModeLabel(draft.recordMode, RECORD_MODES)}
+            <span className="field__caret" style={{ float: 'none', margin: 0 }}>
+              <IconChevronDown size={16} />
+            </span>
+          </div>
         </FieldCard>
 
         <FieldCard label="备注（选填）" icon={<IconPencil size={20} />}>
@@ -110,14 +134,27 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
             type="text"
             value={draft.note}
             placeholder="写下你想说的话..."
-            onChange={handleNoteChange} // 🌟 挂载拦截逻辑
+            onChange={handleNoteChange}
             tabIndex={backdrop ? -1 : undefined}
           />
         </FieldCard>
       </div>
 
       <div className="form-page__actions">
-        <button type="button" className="btn btn--primary btn--block" onClick={handleSave}>
+        <button
+          type="button"
+          className="btn btn--primary btn--block"
+          onClick={handleSave}
+          disabled={isTitleEmpty}
+          style={{
+            backgroundColor: isTitleEmpty ? '#DCEBDD' : 'var(--green)',
+            // 🌟 优化：禁用时文字变灰，正常时为白色
+            color: isTitleEmpty ? '#fff' : '#fff', 
+            cursor: isTitleEmpty ? 'not-allowed' : 'pointer',
+            opacity: 1,
+            transition: 'background-color 0.2s ease, color 0.2s ease',
+          }}
+        >
           保存
         </button>
       </div>
