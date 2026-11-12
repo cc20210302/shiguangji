@@ -17,7 +17,9 @@ const config : CapacitorConfig = {
 			      splashImmersive: false, // 建议设为 false，避免与全屏模式冲突
 		},
 		EdgeToEdge: {
-			backgroundColor: '#f8f7f2', // 默认状态栏和导航栏背景色
+			backgroundColor: '#f8f7f2', 
+			    statusBarColor: '#00000000',
+			    navigationBarColor: '#00000000'
 		},
 		SystemBars: {
 			insetsHandling: 'disable', // 关键：禁用内置边距处理，交由 EdgeToEdge 接管

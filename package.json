@@ -17,6 +17,8 @@
     "@capacitor/cli": "^8.6.0",
     "@capacitor/core": "^8.6.0",
     "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
+    "@capawesome/capacitor-android-edge-to-edge-support": "^8.0.8",
     "capacitor-android-system-bars": "^2.1.2",
     "lunar-javascript": "^1.7.8",
     "react": "^19.2.0",

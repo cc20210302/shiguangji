@@ -28,7 +28,7 @@ export default function App() {
         const info = await CapacitorApp.getInfo()
         
         // 3. 请求远端的 version.json（加时间戳防止 CDN 缓存）
-        const res = await fetch('https://cdn.jsdelivr.net/gh/cc20210302/shiguangji@main/version.json?t=' + Date.now())
+        const res = await fetch('https://raw.githubusercontent.com/cc20210302/shiguangji/main/version.json?t=' + Date.now())
         const remote = await res.json()
 
         // 4. 比对版本
