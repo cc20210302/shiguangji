@@ -4,7 +4,7 @@ import { BackButton } from '../components/BackButton'
 import { PageShell } from '../components/PageShell'
 import { countdown, nextOccurrence } from '../lib/countdown'
 import { cx } from '../lib/cx'
-import { formatDateCN, parseISODate } from '../lib/date'
+import { formatDateCN, parseISODate, formatDaysToMonthDay } from '../lib/date'
 import { useGoBack } from '../lib/navigation'
 import { useEvents } from '../store/EventsProvider'
 // 🌟 引入我们刚写的颜色工具函数
@@ -116,12 +116,29 @@ export default function EventDetailPage() {
           {datePrefix}{formatDateCN(displayDate)}
         </p>
 
-        <div className={cx('detail-stat', themeClass)}>
-          <p className="detail-stat__label">{state.label}</p>
-          <p className="detail-stat__days" style={{ color: state.isPast ? '#999' : 'var(--theme-color)' }}>
-            {state.value}
-          </p>
-        </div>
+                        <div className={cx('detail-stat', themeClass)}>
+                          <div className="detail-stat__main">
+                            <p className="detail-stat__label">{state.label}</p>
+                            
+                            {/* 🌟 核心修改：如果是“今天”直接显示，否则数字和天分开 */}
+                            <p className="detail-stat__days" style={{ color: state.isPast ? '#999' : 'var(--theme-color)' }}>
+                              {state.value === '今天' ? (
+                                '今天'
+                              ) : (
+                                <>
+                                  {state.days}
+                                  <span className="detail-stat__unit"> 天</span>
+                                </>
+                              )}
+                            </p>
+                          </div>
+                          
+                          {state.days >= 30 && (
+                            <span className="detail-stat__extra">
+                              {formatDaysToMonthDay(state.days)}
+                            </span>
+                          )}
+                        </div>
 
         <p className="detail-note-label">备注信息</p>
         <p className={cx('detail-note', !event.note && 'is-empty')}>{event.note || EMPTY_NOTE}</p>

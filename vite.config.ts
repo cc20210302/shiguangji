@@ -38,4 +38,7 @@ export default defineConfig({
 			]
 		}
 	},
+	build: {
+	    chunkSizeWarningLimit: 1000, // 🌟 把阈值调到 1000 KB，黄字就消失了
+	  },
 })

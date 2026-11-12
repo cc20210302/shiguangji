@@ -3,29 +3,27 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- 强制窗口背景色为米色，防白屏 -->
+        <item name="android:windowBackground">#f8f7f2</item>
 
-        <!-- 🌟 设为透明 -->
         <item name="android:statusBarColor">@android:color/transparent</item>
-
-        <!-- 🌟 强制图标为深色（黑色），因为你页面是浅色底 -->
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- 🚨 绝对不要有 windowOptOutEdgeToEdgeEnforcement 这一行！ -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
-    <!-- 🌟 关键修改：不要用 Theme.SplashScreen，改用 AppTheme.NoActionBar -->
+    <!-- 🌟 启动页主题 -->
     <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-        <!-- 设为全屏图片，不压缩 -->
         <item name="android:background">@drawable/splash</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>

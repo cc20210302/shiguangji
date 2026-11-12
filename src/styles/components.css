@@ -32,6 +32,8 @@
   flex: 0 0 auto;
   background: var(--surface);
   box-shadow: 0 -1px 0 var(--line);
+   /* 🌟 核心：让标签栏延伸到屏幕最底部，覆盖 Home 条区域 */
+    padding-bottom: env(safe-area-inset-bottom, 34px); 
 }
 
 .tabbar__row {
@@ -101,8 +103,12 @@
 /* ─────────────────────────  页面头部（返回）  ───────────────────────── */
 .page-head {
   position: relative;
-  height: 44px;
-  padding: 0 var(--gutter);
+  height: auto;
+  /* 🌟 加上安全区 */
+    padding-top: max(env(safe-area-inset-top), 12px);
+    padding-bottom: 12px;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
   display: flex;
   align-items: center;
 }
@@ -143,7 +149,7 @@
 .hero-card {
   position: relative;
   margin: 20px var(--gutter) 0;
-  height: 118px;
+  height: auto;
   padding: 12px;
   border-radius: var(--r-lg);
   background: var(--green);
@@ -184,6 +190,7 @@
   letter-spacing: 0.4px;
   color: var(--surface);
   font-variant-numeric: tabular-nums;
+
 }
 
 .hero-card__event {
@@ -329,7 +336,7 @@
 }
 
 .event-row__date {
-  font-size: var(--fs-162);
+  font-size: var(--fs-13);
   line-height: 20px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -346,8 +353,9 @@
   /* background: var(--peach); */
   color: var(--ink);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  
 }
 
 .event-row--past .event-row__badge {
@@ -406,7 +414,7 @@
   position: relative;
   z-index: 1;
   max-width: 190px;
-  font-size: var(--fs-168);
+  font-size: var(--fs-20);
   line-height: 21px;
   font-weight: 600;
   color: var(--ink-2);
@@ -619,6 +627,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding-bottom: 45px;
 }
 
 .detail-title {
@@ -637,16 +646,30 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* 倒计时卡片 */
 .detail-stat {
   margin-top: 24px;
   height: 94px;
   padding: 16px;
   border-radius: var(--r-md);
-  /* 🌟 背景跟随主题 */
   background: var(--theme-bg, var(--mint)); 
   transition: background-color 0.3s ease;
+  
+  /* 🌟 新增：改成 Flex 布局，左右对齐 */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; 
 }
 
+/* 左侧主内容容器 */
+.detail-stat__main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* 标签和天数的原有样式保留 */
 .detail-stat__label {
   font-size: 12.5px;
   line-height: 21px;
@@ -658,10 +681,22 @@
   font-size: 24px;
   line-height: 32px;
   font-weight: 700;
-  /* 🌟 文字颜色跟随主题 */
-  /* color: var(--theme-color, var(--green)); */
   letter-spacing: 0.3px;
   font-variant-numeric: tabular-nums;
+}
+/* 🌟 新增：让“天”字变小的样式 */
+.detail-stat__unit {
+  font-size: 14px;      /* 把字号改小 */
+  font-weight: normal;  /* 取消加粗，显得更轻盈 */
+  margin-left: 4px;     /* 和数字稍微隔开一点点 */
+  vertical-align: baseline; /* 底部对齐 */
+}
+
+/* 🌟 新增：右侧换算文字样式 */
+.detail-stat__extra {
+  font-size: 14px;
+  color: rgba(51, 58, 53, 0.6); /* 稍微淡一点的文字颜色 */
+  margin-bottom: 0px; /* 和底部稍微对齐 */
 }
 .detail-hero-art {
   position: relative;
@@ -698,7 +733,7 @@
   gap: 16px;
   margin-top: auto;
   padding-top: 24px;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); /* 🌟 底部加个安全距离，防止被 iPhone 底部横条挡住 */
+  padding-bottom: 0px; /* 🌟 底部加个安全距离，防止被 iPhone 底部横条挡住 */
 }
 
 .detail-actions .btn {
@@ -1039,3 +1074,108 @@
   }
 }
 
+/* ================= 更新弹窗样式 ================= */
+.update-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 0 24px;
+  animation: fade-in 0.2s ease-out;
+}
+
+.update-modal {
+  width: 100%;
+  max-width: 320px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  animation: scale-up 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.update-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.update-modal__title-wrap {
+  flex: 1;
+  padding-top: 12px;
+}
+
+.update-modal__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.update-modal__version {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.update-modal__art {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.update-modal__body {
+  margin-bottom: 30px;
+}
+
+.update-modal__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.update-modal__log {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.update-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.update-modal__btn-update {
+  width: 100%;
+  height: 48px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.update-modal__btn-cancel {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px;
+  cursor: pointer;
+}
+
+@keyframes scale-up {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

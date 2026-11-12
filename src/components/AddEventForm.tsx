@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation,useNavigate } from 'react-router-dom'
 import type { EventCategory } from '../data/events'
 import { CATEGORY_META, RECORD_MODES } from '../data/events'
 import { recordModeLabel } from '../lib/countdown'
@@ -24,14 +24,16 @@ interface AddEventFormProps {
 
 export function AddEventForm({ backdrop = false }: AddEventFormProps) {
   const navigate = useNavigate()
+  const location = useLocation() // 🌟 
   const goBack = useGoBack()
   const { draft, patchDraft, addEvent, updateEvent, resetDraft } = useEvents()
 
   const isTitleEmpty = !draft.title.trim()
+  const fromPath = (location.state as { from?: string } | null)?.from || '/'
 
   const handleCategory = (next: EventCategory) => {
     patchDraft({ category: next })
-    navigate(`/add/${next}`, { replace: true })
+    navigate(`/add/${next}`, { state: { from: fromPath }, replace: true })
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +66,11 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
     }
     const id = addEvent(draft)
     resetDraft(draft.category)
-    navigate('/add-success', { state: { id } })
+    // 🌟 核心修改：加上 replace: true，覆盖掉表单页的历史记录
+        navigate('/add-success', { 
+              state: { id, category: draft.category, from: fromPath }, 
+              replace: true 
+            }) 
   }
 
   return (

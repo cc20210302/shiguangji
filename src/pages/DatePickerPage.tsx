@@ -6,7 +6,7 @@ import { daysInMonth, parseISODate, toISODate } from '../lib/date'
 import { useGoBack } from '../lib/navigation'
 import { useEvents } from '../store/EventsProvider'
 
-const YEARS = Array.from({ length: 81 }, (_, index) => 2020 + index)
+const YEARS = Array.from({ length: 201 }, (_, index) => 1900 + index)
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1)
 
 const pad2 = (value: number) => String(value).padStart(2, '0')
@@ -21,7 +21,7 @@ export default function DatePickerPage() {
   const [month, setMonth] = useState(initial.getMonth() + 1)
   const [day, setDay] = useState(initial.getDate())
 
-  const maxDay = daysInMonth(year, month)
+  const maxDay = daysInMonth(year, month-1)
   const safeDay = Math.min(day, maxDay)
   const days = useMemo(
     () => Array.from({ length: maxDay }, (_, index) => index + 1),

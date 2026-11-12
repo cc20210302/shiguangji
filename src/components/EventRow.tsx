@@ -1,7 +1,7 @@
 import type { CountdownEvent } from '../data/events'
-import { countdown } from '../lib/countdown'
+import { countdown, nextOccurrence } from '../lib/countdown'
 import { cx } from '../lib/cx'
-import { formatMonthDayCN, parseISODate } from '../lib/date'
+import { formatDateCN, parseISODate  } from '../lib/date'
 import { CategoryIcon } from './Icons'
 
 interface EventRowProps {
@@ -13,6 +13,11 @@ interface EventRowProps {
 export function EventRow({ event, onClick }: EventRowProps) {
   const state = countdown(event)
   const past = state.signed < 0
+  // 🌟 新增：判断是否是从这天起
+    const isFromToday = event.recordMode === 'fromToday'
+    const datePrefix = isFromToday ? '起始日' : '目标日'
+    // 🌟 新增：“从这天起”显示原始日期，“目标日”显示下一次发生的日期
+    const displayDate = isFromToday ? parseISODate(event.date) : nextOccurrence(event)
 
   return (
     <li>
@@ -26,7 +31,9 @@ export function EventRow({ event, onClick }: EventRowProps) {
         </span>
         <span className="event-row__body">
           <span className="event-row__title">{event.title}</span>
-          <span className="event-row__date">{formatMonthDayCN(parseISODate(event.date))}</span>
+          <span className="event-row__date">
+                    {datePrefix} {formatDateCN(displayDate)}
+                  </span>
         </span>
         <span className="event-row__badge">
           {state.signed === 0 ? '今天' : `${state.days}天`}

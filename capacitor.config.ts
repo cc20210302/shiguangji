@@ -5,6 +5,7 @@ const config : CapacitorConfig = {
 	appId: 'com.example.shiguangji',
 	appName: '时光记',
 	webDir: 'dist',
+	
 	plugins: {
 		SplashScreen: {
 			launchShowDuration: 2000,

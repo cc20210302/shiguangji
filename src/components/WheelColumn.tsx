@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
 
-const ITEM_HEIGHT = 39
-
 interface WheelColumnProps {
   values: number[]
   value: number
@@ -10,18 +8,29 @@ interface WheelColumnProps {
   label: string
 }
 
-/** 滚轮选择列（年 / 月 / 日），滚动吸附到中间高亮行 */
 export function WheelColumn({ values, value, onChange, format, label }: WheelColumnProps) {
   const columnRef = useRef<HTMLDivElement | null>(null)
   const idleTimer = useRef<number | undefined>(undefined)
-  const index = Math.max(0, values.indexOf(value))
+  
+  // 🌟 记录初始值，防止多次触发
+  const initialValueRef = useRef(value) 
 
+  // 🌟 核心修复 1：只在组件初次挂载时居中一次，绝不干预用户后续滑动
   useEffect(() => {
     const node = columnRef.current
     if (!node) return
-    const target = index * ITEM_HEIGHT
-    if (Math.abs(node.scrollTop - target) > 2) node.scrollTop = target
-  }, [index])
+
+    const timer = setTimeout(() => {
+      const targetIndex = values.indexOf(initialValueRef.current)
+      if (targetIndex !== -1) {
+        const firstItem = node.children[1] as HTMLElement
+        const itemHeight = firstItem ? firstItem.offsetHeight : 39
+        node.scrollTop = targetIndex * itemHeight
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [values])
 
   useEffect(
     () => () => {
@@ -30,19 +39,41 @@ export function WheelColumn({ values, value, onChange, format, label }: WheelCol
     [],
   )
 
+  // 🌟 核心修复 2：滚动监听，找物理中心最近的元素，触发外部 onChange
   const handleScroll = useCallback(() => {
     const node = columnRef.current
     if (!node) return
     if (idleTimer.current !== undefined) window.clearTimeout(idleTimer.current)
+    
     idleTimer.current = window.setTimeout(() => {
-      const nextIndex = Math.min(
-        values.length - 1,
-        Math.max(0, Math.round(node.scrollTop / ITEM_HEIGHT)),
-      )
-      const nextValue = values[nextIndex]
-      if (nextValue !== undefined && nextValue !== value) onChange(nextValue)
-    }, 110)
+      const containerCenter = node.getBoundingClientRect().top + node.offsetHeight / 2
+      let closestIndex = 0
+      let minDistance = Infinity
+      
+      for (let i = 0; i < values.length; i++) {
+        const item = node.children[i + 1] as HTMLElement
+        if (!item) continue
+        
+        const itemRect = item.getBoundingClientRect()
+        const itemCenter = itemRect.top + itemRect.height / 2
+        const distance = Math.abs(containerCenter - itemCenter)
+        
+        if (distance < minDistance) {
+          minDistance = distance
+          closestIndex = i
+        }
+      }
+      
+      const nextValue = values[closestIndex]
+      if (nextValue !== undefined && nextValue !== value) {
+        onChange(nextValue)
+      }
+    }, 120) 
   }, [onChange, value, values])
+
+  const handleItemClick = (item: number) => {
+    onChange(item)
+  }
 
   const formatValue = format ?? ((item: number) => String(item))
 
@@ -60,8 +91,8 @@ export function WheelColumn({ values, value, onChange, format, label }: WheelCol
           key={item}
           role="option"
           aria-selected={item === value}
+          onClick={() => handleItemClick(item)}
           className={item === value ? 'picker__item is-active' : 'picker__item'}
-          onClick={() => onChange(item)}
         >
           {formatValue(item)}
         </div>

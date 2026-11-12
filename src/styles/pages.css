@@ -3,14 +3,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* height: 36px; */
+  height: auto;
   /* margin-top: 20px; */
-  padding: 0 var(--gutter);
+  /* 🌟 加上安全区 padding，让背景填满状态栏 */
+    padding-top: max(env(safe-area-inset-top), 12px);
+    padding-bottom: 0; /* 如果有需要，可以加点底 padding */
+    
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
   position: sticky;
   top: 0;
   z-index: 50; /* 确保它盖在其他内容上面 */
   background-color: var(--bg);
-  padding-top: 20px;
+  /* padding-top: 20px; */
 }
 
 .home-head__brand {
@@ -37,63 +42,18 @@
 /* ─────────────────────────  日历  ───────────────────────── */
 /* 其他月份的日期变灰 */
 .cal-day.is-outside .cal-day__num {
-  color: #949995; /* 或者用你项目里的浅灰色变量，比如 var(--gray-300) */
+  color: #949995;
   opacity: 1;
 }
+
 .cal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 16px 0 16px;
-}
-
-/* 顺便清除 h2 默认的上下边距，防止把盒子撑高 */
-.cal-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-/* 把截图里那个黑色方框的按钮样式变干净一点 */
-.cal-header button {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-}
-.cal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 21px;
-  margin-top: 20px;
-  padding: 0 var(--gutter);
-}
-
-.cal-head__month {
-  font-size: var(--fs-15);
-  line-height: 21px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-
-.cal-nav {
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  display: grid;
-  place-items: center;
-  color: var(--ink);
-  transition: background 0.2s ease;
-}
-
-.cal-nav:active {
-  background: var(--mint);
+  padding: 0px 16px 0 16px;
+   /* 🌟 加上安全区 */
+    padding-top: max(env(safe-area-inset-top), 12px);
+  height: auto;
 }
 
 .cal-week {
@@ -113,23 +73,23 @@
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  row-gap: 24px;
-  margin-top: 24px;
+  row-gap: 12px; /* 稍微减小一点行间距，因为格子变高了 */
+  margin-top: 16px;
   padding: 0 var(--gutter);
 }
 
+/* 🌟 改造日期格子，让它可以上下排布 */
 .cal-day {
   position: relative;
-  height: 21px;
+  height: 44px; /* 高度从 21px 改为 44px */
   padding: 0;
   border: 0;
   background: none;
   display: flex;
+  flex-direction: column; /* 纵向排列 */
   align-items: center;
   justify-content: center;
-  font-size: var(--fs-14);
-  line-height: 21px;
-  color: var(--ink);
+  gap: 1px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -138,8 +98,8 @@
   top: 50%;
   left: 50%;
   z-index: 0;
-  width: 32px;
-  height: 32px;
+  width: 40px;  /* 圆环放大 */
+  height: 40px; /* 圆环放大 */
   border-radius: 50%;
   transform: translate(-50%, -50%);
   background: transparent;
@@ -167,6 +127,22 @@
 .cal-day__num {
   position: relative;
   z-index: 1;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+/* 🌟 新增：农历文字样式 */
+.cal-day__lunar {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  color: var(--muted-2);
+  line-height: 1;
+}
+
+/* 选中状态下，农历文字变半透明白 */
+.cal-day.is-selected .cal-day__lunar {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .cal-day__dot {
@@ -174,8 +150,8 @@
   bottom: -5px;
   left: 50%;
   z-index: 1;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   transform: translateX(-50%);
   background: var(--green);
@@ -191,14 +167,25 @@
 
 /* 日历里的区块标题与网格间距 32（设计稿 355 → 387） */
 .section-title--calendar {
-  margin-top: 32px;
+   /* 🚨 删掉原本的 margin-top: 32px; 改为 margin: 0 */
+    margin: 0;
+    
+    /* 🌟 核心修改：用 padding-top 撑开空间，并向下留 12px 间距。
+       高度 60px 足够覆盖绝大多数手机的顶部状态栏 */
+    padding: 24px var(--gutter) 12px var(--gutter); 
+    
+    /* 🌟 核心：开启吸顶 */
+    position: sticky;
+    top: 0; 
+    z-index: 20; /* 确保盖在卡片和日历上面 */
+    background-color: var(--bg); /* 必须有背景色，不然列表会从字里穿过去 */
 }
 
 /* ─────────────────────────  添加事件  ───────────────────────── */
 .form-page {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  flex: 1; /* 🌟 用 flex:1 代替 min-height，让父级彻底接管高度 */
   padding-bottom: 45px;
 }
 
@@ -248,4 +235,151 @@
   gap: 16px;
   width: 260px;
   margin-top: 48px;
+}
+/* 顶部标题按钮 */
+.cal-title-btn {
+  font-size: var(--fs-18);
+  font-weight: 600;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.cal-title-btn:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* 左右切换箭头按钮 */
+.cal-nav-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-nav-btn:active {
+  opacity: 0.6;
+}
+
+/* 选月模式的 3x4 网格 */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px var(--gutter) 0px;
+}
+
+.month-btn {
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background-color: #DCEBDD; /* 浅绿色背景 */
+  color: var(--ink);
+  font-size: var(--fs-14);
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.month-btn.is-today-month {
+  /* 使用 inset 阴影模拟内描边，不会改变按钮原有尺寸 */
+  box-shadow: inset 0 0 0 1.5px var(--green);
+}
+.month-btn.is-today-month.is-active {
+  box-shadow: inset 0 0 0 1.5px #fff; /* 用白色内描边凸显 */
+}
+.month-btn:active {
+  transform: scale(0.96);
+}
+
+/* 选中的月份：深绿色背景，白色文字 */
+.month-btn.is-active {
+  background-color: var(--green);
+  color: #fff;
+}
+/* ─────────────────────────  滚轮选择器（极度重要，请补全）  ───────────────────────── */
+.picker {
+  position: relative;
+  height: 175px;
+  display: flex;
+  margin-top: 10px;
+}
+
+/* 中间的浅绿色选中背景框 */
+.picker__pill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 40px;
+  transform: translateY(-50%);
+  border-radius: var(--r-sm);
+  background: var(--mint);
+  pointer-events: none;
+  z-index: 0; 
+}
+
+.picker__col {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  
+  /* 🌟 核心：强制物理吸附 */
+  scroll-snap-type: y mandatory; 
+  
+  scrollbar-width: none;
+  text-align: center;
+  /* 上下渐隐遮罩效果 */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 26%, #000 74%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 26%, #000 74%, transparent 100%);
+}
+
+.picker__col::-webkit-scrollbar {
+  display: none;
+}
+
+.picker__item {
+  height: 39px; /* 固定每个数字的高度 */
+  line-height: 39px;
+  font-size: var(--fs-14);
+  color: var(--muted);
+  
+  /* 🌟 核心：让每个数字对齐到中心点 */
+  scroll-snap-align: center; 
+  
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.picker__item.is-active {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* 上下占位符：高度 = (容器总高 175 - 单项高度 39) / 2 = 68px */
+.picker__spacer {
+  height: 68px;
+}
+/* 🌟 日历页专属的顶部遮罩 */
+.calendar-top-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* 高度适配刘海屏，兜底 60px，刚好盖住状态栏 */
+  height: max(env(safe-area-inset-top), 24px); 
+  background-color: var(--app-bg-color, #f8f7f2);
+  /* 层级设在内容之上，但低于吸顶标题(50)和弹窗(20) */
+  z-index: 10; 
+  pointer-events: none; /* 穿透点击 */
 }

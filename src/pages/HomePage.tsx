@@ -1,24 +1,23 @@
-import { useEffect } from 'react' // 🌟 1. 引入 useEffect
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react' 
+import { useLocation, useNavigate } from 'react-router-dom'
 import { EventRow } from '../components/EventRow'
 import { CalendarStampArt, StickerScene } from '../components/Illustrations'
 import { CategoryIcon, IconPlus } from '../components/Icons'
 import { PageShell } from '../components/PageShell'
 import { CATEGORIES, CATEGORY_META } from '../data/events'
-import { countdown, sortByUpcoming } from '../lib/countdown'
+import { countdown, sortByUpcoming, nextOccurrence } from '../lib/countdown'
 import { cx } from '../lib/cx'
-import { TODAY, formatHeaderDate, formatMonthDayCN, parseISODate } from '../lib/date'
+import { TODAY, formatHeaderDate, formatDateCN, getFullLunarText } from '../lib/date'
 import { createDraft, useEvents } from '../store/EventsProvider'
-// 🌟 2. 引入状态栏控制函数
 import { updateAppTheme } from '../lib/statusBar'
 
 /** 首页（设计稿 1:96 有数据 / 38:1094 空状态） */
 export default function HomePage() {
   const navigate = useNavigate()
+  const location = useLocation() 
   const { events, startDraft } = useEvents()
 
   useEffect(() => {
-    // 🌟 定义一个同步函数，在内部调用 async 函数
     const initTheme = async () => {
       await updateAppTheme('#f8f7f2')
     }
@@ -26,20 +25,24 @@ export default function HomePage() {
   }, [])
 
   const sorted = sortByUpcoming(events)
+  // 🌟 过滤掉所有已经过去的事件
+  const activeEvents = sorted.filter((event) => !countdown(event).isPast)
   const upcoming = sorted.find((event) => !countdown(event).isPast)
   const hero = upcoming
   const heroState = hero ? countdown(hero) : null
 
   const startCreating = (category: (typeof CATEGORIES)[number]) => {
     startDraft(createDraft(category))
-    navigate(`/add/${category}`)
+    navigate(`/add/${category}`, { state: { from: location.pathname } })
   }
 
   return (
     <PageShell activeTab="home">
       <header className="home-head">
         <h1 className="home-head__brand">时光记</h1>
-        <span className="home-head__date">{formatHeaderDate(TODAY)}</span>
+        <span className="home-head__date">
+          {formatHeaderDate(TODAY)} {getFullLunarText(TODAY)}
+        </span>
       </header>
 
       <section className="hero-card" aria-label="下一个重要日子">
@@ -54,7 +57,7 @@ export default function HomePage() {
             </p>
             <p className="hero-card__event">
               {hero.title}
-              {formatMonthDayCN(parseISODate(hero.date))}
+              {formatDateCN(nextOccurrence(hero))}
             </p>
           </>
         ) : (
@@ -82,7 +85,8 @@ export default function HomePage() {
         ))}
       </div>
 
-      {events.length === 0 ? (
+      {/* 🌟 核心修改：判断条件必须是 activeEvents.length === 0 */}
+      {activeEvents.length === 0 ? (
         <div className="empty-state empty-state--home">
           <CalendarStampArt className="empty-state__art" />
           <p className="empty-state__title">还没有记录任何日子</p>
@@ -100,7 +104,7 @@ export default function HomePage() {
         <>
           <h2 className="section-title">即将到来</h2>
           <ul className="event-list">
-            {sorted.map((event) => (
+            {activeEvents.map((event) => (
               <EventRow
                 key={event.id}
                 event={event}

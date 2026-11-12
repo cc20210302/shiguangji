@@ -14,6 +14,7 @@ export default function AddEventPage() {
   const active = isCategory(category) ? category : 'birthday'
   const { draft, patchDraft } = useEvents()
 
+  // 当 URL 里的分类变化时（如用户手动切换顶部标签），同步更新全局草稿里的分类
   useEffect(() => {
     if (draft.category !== active) patchDraft({ category: active })
   }, [active, draft.category, patchDraft])
