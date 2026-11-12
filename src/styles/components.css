@@ -1179,3 +1179,23 @@
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* 🌟 首页头部左侧容器（让标题和版本号横向对齐） */
+.home-head__left {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 标题和标签之间的间距 */
+}
+
+/* 🌟 版本号标签样式 */
+.home-head__version {
+  background-color: #DCEBDD; /* 浅绿色背景（和你的分类背景色保持一致） */
+  color: var(--green);       /* 深绿色文字 */
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 10px;
+  line-height: 1.2;
+  /* 稍微往下偏移一点点，视觉上更居中 */
+  margin-top: 0px; 
+}

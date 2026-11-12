@@ -1,5 +1,7 @@
-import { useEffect } from 'react' 
+import { useEffect, useState } from 'react' 
 import { useLocation, useNavigate } from 'react-router-dom'
+import { App as CapacitorApp } from '@capacitor/app' // 🌟 引入获取 App 信息的插件
+import { Capacitor } from '@capacitor/core' // 🌟 引入判断环境的方法
 import { EventRow } from '../components/EventRow'
 import { CalendarStampArt, StickerScene } from '../components/Illustrations'
 import { CategoryIcon, IconPlus } from '../components/Icons'
@@ -16,12 +18,31 @@ export default function HomePage() {
   const navigate = useNavigate()
   const location = useLocation() 
   const { events, startDraft } = useEvents()
+  
+  // 🌟 新增：存储版本号状态
+  const [version, setVersion] = useState('')
 
   useEffect(() => {
     const initTheme = async () => {
       await updateAppTheme('#f8f7f2')
     }
     initTheme()
+
+    // 🌟 新增：获取当前 App 的版本号
+    const fetchVersion = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const info = await CapacitorApp.getInfo()
+          setVersion(info.version)
+        } else {
+          // 浏览器调试时的兜底显示
+          setVersion('1.1.0')
+        }
+      } catch (e) {
+        console.log('获取版本失败:', e)
+      }
+    }
+    fetchVersion()
   }, [])
 
   const sorted = sortByUpcoming(events)
@@ -39,7 +60,11 @@ export default function HomePage() {
   return (
     <PageShell activeTab="home">
       <header className="home-head">
-        <h1 className="home-head__brand">时光记</h1>
+        {/* 🌟 修改：把标题和版本号包在一个 flex 容器里 */}
+        <div className="home-head__left">
+          <h1 className="home-head__brand">时光记</h1>
+          {version && <span className="home-head__version">v{version}</span>}
+        </div>
         <span className="home-head__date">
           {formatHeaderDate(TODAY)} {getFullLunarText(TODAY)}
         </span>
@@ -85,7 +110,6 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* 🌟 核心修改：判断条件必须是 activeEvents.length === 0 */}
       {activeEvents.length === 0 ? (
         <div className="empty-state empty-state--home">
           <CalendarStampArt className="empty-state__art" />
