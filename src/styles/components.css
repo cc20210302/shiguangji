@@ -389,7 +389,22 @@
   box-shadow: var(--shadow-1);
   transition: transform 0.15s ease, background-color 0.3s ease;
 }
+/* 🌟 新增：已过去的事件背景变灰 */
+.event-card.is-past {
+  background-color: #EAEAEA; /* 柔和的灰色背景 */
+}
+/* /* 过去事件的文字颜色适配灰色背景 */
+.event-card.is-past .event-card__title,
+.event-card.is-past .event-card__label,
+.event-card.is-past .event-card__days {
+  color: #555555; /* 深灰色文字，保证可读性 */
+}
 
+/* 过去事件的插画稍微降低透明度，显得不那么活跃 */
+.event-card.is-past .event-card__sticker-img {
+  opacity: 0.6;
+  filter: grayscale(30%); /* 轻微去色 */
+} 
 
 .event-card:active {
   transform: scale(0.99);
@@ -462,7 +477,7 @@
 }
 /* 🌟 新增/修改：控制图片的填充方式 */
 .event-card__sticker-img {
-  width: 100%;
+  width: 93%;
   height: 100%;
   object-fit: contain; /* 保证图片不被拉伸变形，完整显示 */
   object-position: right center; /* 让图片靠右垂直居中 */

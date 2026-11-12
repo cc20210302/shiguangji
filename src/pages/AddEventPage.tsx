@@ -4,6 +4,7 @@ import { AddEventForm } from '../components/AddEventForm'
 import { PageShell } from '../components/PageShell'
 import { isCategory } from '../data/events'
 import { useEvents } from '../store/EventsProvider'
+import { updateAppTheme } from '../lib/statusBar' // 🌟 1. 引入状态栏控制函数
 
 /**
  * 添加事件（设计稿 33:205 生日 / 36:548 纪念日 / 36:623 节日 / 36:698 其他）
@@ -18,7 +19,10 @@ export default function AddEventPage() {
   useEffect(() => {
     if (draft.category !== active) patchDraft({ category: active })
   }, [active, draft.category, patchDraft])
-
+// 🌟 2. 核心添加：页面一加载，立刻把背景变回默认的米色
+  useEffect(() => {
+    updateAppTheme('#f8f7f2')
+  }, [])
   return (
     <PageShell>
       <AddEventForm />

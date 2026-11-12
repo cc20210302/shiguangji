@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes,useLocation  } from 'react-router-dom'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
@@ -13,6 +13,15 @@ import HomePage from './pages/HomePage'
 import RecordModePage from './pages/RecordModePage'
 import { UpdateModal } from './components/UpdateModal'
 
+// 🌟 新增：一个专门用来重置滚动位置的小组件
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    // 每次路由路径变化时，强制回到顶部
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
 /** 七个页面各一个独立 tsx 文件，路由与设计稿画板一一对应 */
 export default function App() {
   const [updateInfo, setUpdateInfo] = useState<{ version: string; updateLog: string; apkUrl: string } | null>(null)
@@ -26,7 +35,7 @@ export default function App() {
       try {
         const info = await CapacitorApp.getInfo()
         // 请求远端的 version.json
-        const res = await fetch('https://raw.githubusercontent.com/cc20210302/shiguangji/main/version.json?t=' + Date.now())
+        const res = await fetch('https://gitee.com/ccdesigncc/shiguangji-update/raw/master/version.json?t=' + Date.now())
         const remote = await res.json()
 
         // 比对版本
@@ -56,6 +65,7 @@ export default function App() {
   return (
     <div className="device-shell">
       <div className="device">
+	  <ScrollToTop /> {/* 🌟 在这里挂载它 */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/calendar" element={<CalendarPage />} />

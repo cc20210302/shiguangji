@@ -164,21 +164,38 @@
 .empty-state--calendar {
   margin-top: 10px;
 }
-
+/* 🌟 新增：标题和按钮的父容器 */
+.calendar-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  padding: 0 var(--gutter);
+}
 /* 日历里的区块标题与网格间距 32（设计稿 355 → 387） */
 .section-title--calendar {
-   /* 🚨 删掉原本的 margin-top: 32px; 改为 margin: 0 */
-    margin: 0;
-    
-    /* 🌟 核心修改：用 padding-top 撑开空间，并向下留 12px 间距。
-       高度 60px 足够覆盖绝大多数手机的顶部状态栏 */
-    padding: 24px var(--gutter) 12px var(--gutter); 
-    
-    /* 🌟 核心：开启吸顶 */
-    position: sticky;
-    top: 0; 
-    z-index: 20; /* 确保盖在卡片和日历上面 */
-    background-color: var(--bg); /* 必须有背景色，不然列表会从字里穿过去 */
+  margin: 0; 
+  padding: 0;
+  font-size: var(--fs-16);
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--ink);
+}
+/* 🌟 新增：回到今天按钮样式 */
+.back-to-today-btn {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-to-today-btn:active {
+  background: var(--mint);
 }
 
 /* ─────────────────────────  添加事件  ───────────────────────── */
@@ -246,12 +263,9 @@
   padding: 8px 16px;
   cursor: pointer;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  /* transition: background 0.2s ease; */
 }
 
-.cal-title-btn:active {
-  background: rgba(0, 0, 0, 0.05);
-}
 
 /* 左右切换箭头按钮 */
 .cal-nav-btn {
