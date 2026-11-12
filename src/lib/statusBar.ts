@@ -1,30 +1,51 @@
-import { Capacitor } from '@capacitor/core'
-import { EdgeToEdge } from '@capawesome/capacitor-android-edge-to-edge-support'
+import { Capacitor, registerPlugin } from '@capacitor/core'
 import { StatusBar, Style } from '@capacitor/status-bar'
 
-export async function updateAppTheme(color: string) {
-  // 1. 动态修改网页根节点、body 的背景色
-  document.documentElement.style.setProperty('--app-bg-color', color)
-  document.documentElement.style.backgroundColor = color
-  document.body.style.backgroundColor = color
+interface ThemeStatusBarPlugin {
+  setBackgroundColor(options: { color: string }): Promise<{ color: string }>
+}
 
-  // 2. 顺手把手机外壳容器 (.phone) 的背景色也改掉
-  const phoneEl = document.querySelector('.phone') as HTMLElement
-  if (phoneEl) {
-    phoneEl.style.backgroundColor = color
-  }
+// Android 15/16 enforces edge-to-edge and ignores StatusBar.backgroundColor.
+// This small native bridge paints the window behind the transparent system bar.
+const ThemeStatusBar = registerPlugin<ThemeStatusBarPlugin>('ThemeStatusBar')
 
-  // 3. 原生环境下，调用插件强制接管
-  if (Capacitor.isNativePlatform()) {
+let latestThemeRequest = 0
+let nativeThemeQueue: Promise<void> = Promise.resolve()
+
+/** Keep the web page and native system status-bar background in sync. */
+export async function updateAppTheme(color: string): Promise<void> {
+  const requestId = ++latestThemeRequest
+  const normalizedColor = color.startsWith('#') ? color : `#${color}`
+
+  // Web 层立即更新，避免等待原生桥接期间出现旧颜色/白色闪屏。
+  document.documentElement.style.setProperty('--app-bg-color', normalizedColor)
+  document.documentElement.style.backgroundColor = normalizedColor
+  document.body.style.backgroundColor = normalizedColor
+  document.documentElement.style.setProperty('--status-bar-bg', normalizedColor)
+  document.querySelectorAll<HTMLElement>('.phone').forEach((phoneEl) => {
+    phoneEl.style.backgroundColor = normalizedColor
+  })
+
+  if (!Capacitor.isNativePlatform()) return
+
+  // 原生系统栏调用串行执行，并丢弃过期主题请求，避免返回路由时异步竞态。
+  nativeThemeQueue = nativeThemeQueue.then(async () => {
+    if (requestId !== latestThemeRequest) return
+
     try {
-      // 🌟 强制状态栏背景设为透明
-      await StatusBar.setBackgroundColor({ color: '#00000000' })
-      // 🌟 强制图标为深色（黑色）
-      await StatusBar.setStyle({ style: Style.Dark })
-      // 🌟 使用 EdgeToEdge 插件强制底栏和状态栏透明
-      await EdgeToEdge.setBackgroundColor({ color: '#00000000' })
-    } catch (e) {
-      console.warn('状态栏设置失败:', e)
+      await StatusBar.setStyle({ style: Style.Light })
+      if (requestId !== latestThemeRequest) return
+
+      if (Capacitor.getPlatform() === 'android') {
+        await ThemeStatusBar.setBackgroundColor({ color: normalizedColor })
+      } else {
+        await StatusBar.setBackgroundColor({ color: normalizedColor })
+      }
+      if (requestId === latestThemeRequest) await StatusBar.show()
+    } catch (error) {
+      console.warn('状态栏主题设置失败:', error)
     }
-  }
+  })
+
+  await nativeThemeQueue
 }

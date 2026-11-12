@@ -129,7 +129,7 @@ ul {
   
   /* 🌟 依靠这个让内容避开状态栏，绝对不会遮挡标题 */
   padding-top: 0px; 
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: 0px;
 }
 
 .screen::-webkit-scrollbar {

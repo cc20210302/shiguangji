@@ -1,7 +1,7 @@
 
 // 🌟 假设你有一张类似灯泡的插图，如果没有，请替换成你 assets 里的图片路径
 // import updateArt from '../assets/update-art.png' 
-
+import updateArt from '../assets/update.png' 
 interface UpdateModalProps {
   isOpen: boolean
   version: string
@@ -25,7 +25,7 @@ export function UpdateModal({ isOpen, version, updateLog, onUpdate, onCancel }: 
           {/* 🌟 如果你有对应的插图，把下面这个 div 换成 <img src={updateArt} ... /> */}
           <div className="update-modal__art">
             {/* 这里先用一个占位符，你可以换成你的手绘插图 */}
-            <img src="/src/assets/update.png" alt="update" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+            <img src={updateArt} alt="update" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
           </div>
         </div>
 

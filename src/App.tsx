@@ -11,27 +11,25 @@ import DatePickerPage from './pages/DatePickerPage'
 import EventDetailPage from './pages/EventDetailPage'
 import HomePage from './pages/HomePage'
 import RecordModePage from './pages/RecordModePage'
-import { UpdateModal } from './components/UpdateModal' // 🌟 引入新做的精美弹窗
+import { UpdateModal } from './components/UpdateModal'
 
 /** 七个页面各一个独立 tsx 文件，路由与设计稿画板一一对应 */
 export default function App() {
-  // 🌟 控制更新弹窗的状态
   const [updateInfo, setUpdateInfo] = useState<{ version: string; updateLog: string; apkUrl: string } | null>(null)
 
   useEffect(() => {
+    // 状态栏由 main.tsx 的全局主题初始化统一管理。
+    // 此处只负责检查更新，避免 App 生命周期再次覆盖系统栏样式。
     const checkUpdate = async () => {
-      // 1. 仅在原生 App 环境检查
       if (!Capacitor.isNativePlatform()) return
 
       try {
-        // 2. 获取本地版本号
         const info = await CapacitorApp.getInfo()
-        
-        // 3. 请求远端的 version.json（加时间戳防止 CDN 缓存）
+        // 请求远端的 version.json
         const res = await fetch('https://raw.githubusercontent.com/cc20210302/shiguangji/main/version.json?t=' + Date.now())
         const remote = await res.json()
 
-        // 4. 比对版本
+        // 比对版本
         if (remote.versionName !== info.version) {
           setUpdateInfo({
             version: remote.versionName,
@@ -44,16 +42,14 @@ export default function App() {
       }
     }
 
-    // 延迟 2 秒检查，不阻塞首屏渲染
     const timer = setTimeout(checkUpdate, 2000)
     return () => clearTimeout(timer)
   }, [])
 
-  // 点击“立即更新”
   const handleGoUpdate = async () => {
     if (updateInfo?.apkUrl) {
       await Browser.open({ url: updateInfo.apkUrl })
-      setUpdateInfo(null) // 关闭弹窗
+      setUpdateInfo(null)
     }
   }
 
@@ -71,7 +67,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
-        {/* 🌟 在这里挂载弹窗，全局生效 */}
         <UpdateModal
           isOpen={!!updateInfo}
           version={`v${updateInfo?.version || ''}`}

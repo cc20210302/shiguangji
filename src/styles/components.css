@@ -764,7 +764,7 @@
 .sheet {
   position: relative;
   z-index: 1;
-  padding: 12px var(--gutter) 45px;
+  padding: 12px var(--gutter) 40px;
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   background: var(--surface);
   box-shadow: 0 -12px 40px rgba(24, 30, 27, 0.16);

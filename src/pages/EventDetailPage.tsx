@@ -8,7 +8,7 @@ import { formatDateCN, parseISODate, formatDaysToMonthDay } from '../lib/date'
 import { useGoBack } from '../lib/navigation'
 import { useEvents } from '../store/EventsProvider'
 // 🌟 引入我们刚写的颜色工具函数
-import { updateAppTheme } from '../lib/statusBar' // 🌟 使用控制原生状态栏的工具
+import { updateAppTheme } from '../lib/statusBar'
 
 import cakeImg from '../assets/cake.png'
 import heartImg from '../assets/heart.png'
@@ -27,29 +27,19 @@ export default function EventDetailPage() {
 
   const event = eventId ? getEvent(eventId) : undefined
 
-  // 🌟 动态修改手机状态栏的颜色和网页底色
+  // 详情页只负责设置当前分类主题；离开时不在 cleanup 中异步重置。
+  // 目标页面（例如首页）会在自己的 layout effect 中同步设置目标主题，
+  // 避免路由切换时两个异步状态栏请求互相覆盖，造成顶部闪变。
   useEffect(() => {
     const colorMap: Record<string, string> = {
       birthday: '#DCEBDD',
       anniversary: '#F8DFE0',
       festival: '#F9E6D8',
-      other: '#F2F2F2',
+      other: '#DCEBDD',
     }
     const color = event ? (colorMap[event.category] || '#f8f7f2') : '#f8f7f2'
-  
-    const syncTheme = async () => {
-      await updateAppTheme(color)
-    }
-    syncTheme()
-  
-    // 离开页面时恢复默认
-    return () => {
-      const resetTheme = async () => {
-        await updateAppTheme('#f8f7f2')
-      }
-      resetTheme()
-    }
-  }, [event])
+    void updateAppTheme(color)
+  }, [event?.category, event?.id])
   if (!event) {
     return (
       <PageShell>

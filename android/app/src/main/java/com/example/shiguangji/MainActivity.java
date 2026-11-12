@@ -1,42 +1,43 @@
 package com.example.shiguangji;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
-import android.view.WindowInsetsController;
+
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(ThemeStatusBarPlugin.class);
         super.onCreate(savedInstanceState);
 
         Window window = getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#f8f7f2")));
+        window.getDecorView().setBackgroundColor(Color.parseColor("#f8f7f2"));
 
-        // 🌟 1. 强制全屏延伸，允许内容画到状态栏和导航栏底下
+        // Keep edge-to-edge rendering. ThemeStatusBarPlugin paints the native
+        // window/decor background visible behind Android 15/16 system bars.
         WindowCompat.setDecorFitsSystemWindows(window, false);
-
-        // 🌟 2. 状态栏和导航栏透明
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
 
-        // 🌟 3. 关闭系统强制对比度白底
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.setStatusBarContrastEnforced(false);
             window.setNavigationBarContrastEnforced(false);
         }
 
-        // 🌟 4. 强制图标为黑色（适配浅色背景）
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowInsetsController controller = window.getInsetsController();
-            if (controller != null) {
-                controller.setSystemBarsAppearance(
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-                );
-            }
-        }
+        // Native fallback: LIGHT appearance means dark icons on a light surface.
+        // The Capacitor StatusBar plugin applies the same appearance after startup
+        // and whenever the app theme changes.
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(window, window.getDecorView());
+        controller.setAppearanceLightStatusBars(true);
+        controller.setAppearanceLightNavigationBars(true);
     }
 }

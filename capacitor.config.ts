@@ -10,19 +10,17 @@ const config : CapacitorConfig = {
 		SplashScreen: {
 			launchShowDuration: 2000,
 			launchAutoHide: true,
-			backgroundColor: "#f8f7f2", // 建议和首页保持一致
-			androidScaleType: "CENTER_CROP",
+			backgroundColor: '#f8f7f2',
+			androidScaleType: 'CENTER_CROP',
 			showSpinner: false,
 			splashFullScreen: true,
-			      splashImmersive: false, // 建议设为 false，避免与全屏模式冲突
+			splashImmersive: false,
 		},
-		EdgeToEdge: {
-			backgroundColor: '#f8f7f2', 
-			    statusBarColor: '#00000000',
-			    navigationBarColor: '#00000000'
-		},
-		SystemBars: {
-			insetsHandling: 'disable', // 关键：禁用内置边距处理，交由 EdgeToEdge 接管
+		StatusBar: {
+			// LIGHT = dark (black) status-bar icons on a light background.
+			overlaysWebView: true,
+			style: 'LIGHT',
+			backgroundColor: '#f8f7f2',
 		},
 	},
 };

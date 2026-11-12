@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react' 
+import { useEffect, useLayoutEffect, useState } from 'react' 
 import { useLocation, useNavigate } from 'react-router-dom'
 import { App as CapacitorApp } from '@capacitor/app' // 🌟 引入获取 App 信息的插件
 import { Capacitor } from '@capacitor/core' // 🌟 引入判断环境的方法
@@ -9,9 +9,15 @@ import { PageShell } from '../components/PageShell'
 import { CATEGORIES, CATEGORY_META } from '../data/events'
 import { countdown, sortByUpcoming, nextOccurrence } from '../lib/countdown'
 import { cx } from '../lib/cx'
+import { updateAppTheme } from '../lib/statusBar'
 import { TODAY, formatHeaderDate, formatDateCN, getFullLunarText } from '../lib/date'
 import { createDraft, useEvents } from '../store/EventsProvider'
-import { updateAppTheme } from '../lib/statusBar'
+
+/**
+ * 首页滚动位置在详情页等子路由间暂存，返回首页时在绘制前恢复，
+ * 避免 HomePage 卸载/重新挂载后列表突然跳回顶部。
+ */
+let savedHomeScrollTop = 0
 
 /** 首页（设计稿 1:96 有数据 / 38:1094 空状态） */
 export default function HomePage() {
@@ -22,13 +28,27 @@ export default function HomePage() {
   // 🌟 新增：存储版本号状态
   const [version, setVersion] = useState('')
 
-  useEffect(() => {
-    const initTheme = async () => {
-      await updateAppTheme('#f8f7f2')
-    }
-    initTheme()
+  useLayoutEffect(() => {
+    // 返回首页时，先同步网页背景和系统栏目标主题，避免上一页颜色残留。
+    void updateAppTheme('#F8F7F2')
 
-    // 🌟 新增：获取当前 App 的版本号
+    const screen = document.querySelector<HTMLElement>('.phone .screen')
+    if (!screen) return
+
+    screen.scrollTop = savedHomeScrollTop
+    const rememberScroll = () => {
+      savedHomeScrollTop = screen.scrollTop
+    }
+    screen.addEventListener('scroll', rememberScroll, { passive: true })
+
+    return () => {
+      savedHomeScrollTop = screen.scrollTop
+      screen.removeEventListener('scroll', rememberScroll)
+    }
+  }, [])
+
+  useEffect(() => {
+    // 🌟 获取当前 App 的版本号
     const fetchVersion = async () => {
       try {
         if (Capacitor.isNativePlatform()) {
