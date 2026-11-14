@@ -11,8 +11,8 @@ body,
   padding: 0;
   width: 100%;
   height: 100%;
-  /* 🌟 状态栏透出的就是这个背景色 */
-  background-color: var(--app-bg-color, #f8f7f2); 
+  /* WebView 根背景固定，页面主题只作用于局部内容 */
+  background-color: #f8f7f2;
   overflow: hidden; 
 }
 
@@ -105,8 +105,8 @@ ul {
   display: flex; 
   flex-direction: column;
   overflow: hidden; 
-  /* 🌟 依靠这里的背景色透传 */
-  background-color: var(--app-bg-color, #f8f7f2); 
+  /* 固定页面承载层背景，禁止随路由切换全局改色 */
+  background-color: #f8f7f2;
 }
 
 /* 🚨 已删除 .phone::before 遮挡层 */
@@ -149,7 +149,6 @@ ul {
   height: 319px; /* 🌟 恢复原有高度 */
   background: var(--theme-bg, var(--mint)); 
   z-index: 0;
-  transition: background-color 0.3s ease;
 }
 
 /* 通用按钮 */

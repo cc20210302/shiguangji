@@ -1,26 +1,39 @@
-import type { ReactNode } from 'react'
-import { cx } from '../lib/cx'
-import { BottomNav } from './BottomNav'
-// ❌ 删掉 StatusBar 的引入（如果你的代码里有 import { StatusBar } from './StatusBar'）
+import { useLayoutEffect, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 interface PageShellProps {
   children: ReactNode
+  /** 保留旧页面调用签名；底部导航现由 App 的固定外壳统一管理。 */
   activeTab?: 'home' | 'calendar'
   underlay?: ReactNode
   overlay?: ReactNode
   staticScreen?: boolean
 }
 
-export function PageShell({ children, activeTab, underlay, overlay, staticScreen }: PageShellProps) {
+/**
+ * 页面内容包装器。
+ * .phone / .screen 已提升到 App.tsx 的 Routes 外层，路由切换时不会再卸载重建。
+ * underlay / overlay 通过 Portal 放回固定 .phone 层，保持原来的定位关系。
+ */
+export function PageShell({ children, underlay, overlay }: PageShellProps) {
+  const [phoneRoot, setPhoneRoot] = useState<HTMLElement | null>(null)
+
+  useLayoutEffect(() => {
+    setPhoneRoot(document.querySelector<HTMLElement>('.phone'))
+  }, [])
+
   return (
-    <div className="phone">
-      {underlay}
-      {/* ❌ 删掉了这里的 <StatusBar /> */}
-      
-      <main className={cx('screen', staticScreen && 'screen--static')}>{children}</main>
-      
-      {activeTab ? <BottomNav active={activeTab} /> : null}
-      {overlay}
-    </div>
+    <>
+      {children}
+      {phoneRoot && (underlay || overlay)
+        ? createPortal(
+            <>
+              {underlay}
+              {overlay}
+            </>,
+            phoneRoot,
+          )
+        : null}
+    </>
   )
 }

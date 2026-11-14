@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { App as CapacitorApp } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
@@ -12,6 +12,7 @@ import EventDetailPage from './pages/EventDetailPage'
 import HomePage from './pages/HomePage'
 import RecordModePage from './pages/RecordModePage'
 import { UpdateModal } from './components/UpdateModal'
+import { BottomNav } from './components/BottomNav'
 
 // 🌟 严谨的版本号比对函数
 function isRemoteVersionNewer(remoteVersion: string, localVersion: string): boolean {
@@ -27,40 +28,42 @@ function isRemoteVersionNewer(remoteVersion: string, localVersion: string): bool
   return false
 }
 
-function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
-}
-
 export default function App() {
+  const location = useLocation()
+  const activeTab = location.pathname === '/' ? 'home' : location.pathname === '/calendar' ? 'calendar' : null
   const [updateInfo, setUpdateInfo] = useState<{ version: string; updateLog: string; apkUrl: string } | null>(null)
 
+  // 复用同一个滚动容器；离开首页进入其他路由时滚到顶部。返回首页时由 HomePage 恢复之前的位置。
+  useLayoutEffect(() => {
+    if (location.pathname === '/') return
+    const screen = document.querySelector<HTMLElement>('.phone .screen')
+    if (screen) screen.scrollTop = 0
+  }, [location.pathname])
+
+  // ==========================================
+  // 🌟 检查更新逻辑
+  // ==========================================
   useEffect(() => {
     const checkUpdate = async () => {
-      // 🌟 核心修改：仅在原生环境（如雷电模拟器、真机）执行
-      // 纯电脑浏览器预览时将直接跳过，不再弹窗
+      // 仅在原生环境（如雷电模拟器、真机）执行，纯浏览器预览跳过
       if (!Capacitor.isNativePlatform()) {
         console.info('[更新检查] 当前为浏览器环境，跳过更新检查')
         return
       }
 
       try {
-        // 1. 获取雷电模拟器/真机当前安装的 APK 版本号
         const info = await CapacitorApp.getInfo()
         const localVersion = info.version
         console.info('[更新检查] 当前环境:', Capacitor.getPlatform(), '| 本地版本:', localVersion)
 
-        // 2. 请求 Gitee 上的 version.json
+        // 请求 Gitee 上的 version.json
         const res = await fetch('https://gitee.com/ccdesigncc/shiguangji-update/raw/master/version.json?t=' + Date.now())
         if (!res.ok) throw new Error(`HTTP 状态码 ${res.status}`)
         
         const remote = await res.json()
         console.info('[更新检查] 远端版本:', remote.versionName)
 
-        // 3. 比对版本
+        // 比对版本
         if (remote.versionName && isRemoteVersionNewer(remote.versionName, localVersion)) {
           console.info('[更新检查] 发现新版本，弹出更新框！')
           setUpdateInfo({
@@ -80,6 +83,9 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [])
 
+  // ==========================================
+  // 🌟 用户点击“立即更新”
+  // ==========================================
   const handleGoUpdate = async () => {
     if (!updateInfo?.apkUrl) return
     try {
@@ -93,17 +99,22 @@ export default function App() {
   return (
     <div className="device-shell">
       <div className="device">
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/add/:category" element={<AddEventPage />} />
-          <Route path="/add-success" element={<AddSuccessPage />} />
-          <Route path="/event/:eventId" element={<EventDetailPage />} />
-          <Route path="/date-picker" element={<DatePickerPage />} />
-          <Route path="/record-mode" element={<RecordModePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {/* 页面承载层只创建一次；路由变化只替换内部内容 */}
+        <div className="phone">
+          <main className="screen" key="app-screen">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/add/:category" element={<AddEventPage />} />
+              <Route path="/add-success" element={<AddSuccessPage />} />
+              <Route path="/event/:eventId" element={<EventDetailPage />} />
+              <Route path="/date-picker" element={<DatePickerPage />} />
+              <Route path="/record-mode" element={<RecordModePage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+          {activeTab ? <BottomNav active={activeTab} /> : null}
+        </div>
 
         <UpdateModal
           isOpen={!!updateInfo}

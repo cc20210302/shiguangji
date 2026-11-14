@@ -33,12 +33,20 @@
 	background: var(--surface);
 	box-shadow: 0 -1px 0 var(--line);
 	/* 覆盖底部系统导航安全区域 */
-	padding-bottom: max(env(safe-area-inset-bottom, 0px),
-			var(--home-indicator-h, 34px));
+	padding-bottom: env(safe-area-inset-bottom, 0px); 
 
 	background: var(--surface, #ffffff);
 }
-
+.tabbar::after {
+  content: '';
+  position: absolute;
+  top: 100%; /* 从标签栏正下方开始延伸 */
+  left: 0;
+  right: 0;
+  height: 100px; /* 延伸足够的高度 */
+  background: var(--surface); /* 和标签栏一样的白色 */
+  z-index: -1;
+}
 .tabbar__row {
 	height: var(--tabbar-h);
 	display: flex;
@@ -88,20 +96,7 @@
 	transform: scale(0.94);
 }
 
-.home-indicator {
-	flex: 0 0 var(--home-indicator-h);
-	height: var(--home-indicator-h);
-	display: grid;
-	place-items: center;
-	background: var(--surface);
-}
 
-.home-indicator__bar {
-	width: 134px;
-	height: 5px;
-	border-radius: 3px;
-	background: rgba(51, 58, 53, 0.22);
-}
 
 /* ─────────────────────────  页面头部（返回）  ───────────────────────── */
 .page-head {
@@ -640,7 +635,6 @@
 	/* 🌟 改成读取变量，默认取 mint */
 	background: var(--theme-bg, var(--mint));
 	z-index: 0;
-	transition: background-color 0.3s ease;
 	/* 加个平滑过渡动画 */
 }
 
@@ -690,7 +684,6 @@
 	padding: 16px;
 	border-radius: var(--r-md);
 	background: var(--theme-bg, var(--mint));
-	transition: background-color 0.3s ease;
 
 	/* 🌟 新增：改成 Flex 布局，左右对齐 */
 	display: flex;

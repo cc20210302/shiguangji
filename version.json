@@ -1,6 +1,6 @@
 {
-  "versionCode": 7,
-  "versionName": "1.1.5",
-  "updateLog": "1. 优化了UI。\n2. 修改了更新逻辑。",
-  "apkUrl": "https://github.com/cc20210302/shiguangji/releases/download/v1.1.5/Time.Memoir.apk"
+  "versionCode": 8,
+  "versionName": "1.1.6",
+  "updateLog": "1. 优化了UI。\n2. 修改了页面跳转问题。",
+  "apkUrl": "https://github.com/cc20210302/shiguangji/releases/download/v1.1.6/Time.Memoir.apk"
 }
