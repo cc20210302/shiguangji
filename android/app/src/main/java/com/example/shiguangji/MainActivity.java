@@ -1,40 +1,33 @@
 package com.example.shiguangji;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
-
+import android.view.WindowInsetsController;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        registerPlugin(ThemeStatusBarPlugin.class);
         super.onCreate(savedInstanceState);
 
         Window window = getWindow();
-        window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#f8f7f2")));
-        window.getDecorView().setBackgroundColor(Color.parseColor("#f8f7f2"));
-
-        // Keep one stable edge-to-edge configuration for the entire app.
-        // Theme changes only repaint the status-bar strip; they never toggle this.
+        // 允许全屏
         WindowCompat.setDecorFitsSystemWindows(window, false);
+        // 透明状态栏
         window.setStatusBarColor(Color.TRANSPARENT);
-        window.setNavigationBarColor(Color.TRANSPARENT);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.setStatusBarContrastEnforced(false);
-            window.setNavigationBarContrastEnforced(false);
+        // 强制黑色图标
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController controller = window.getInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsAppearance(
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                );
+            }
         }
-
-        WindowInsetsControllerCompat controller =
-                WindowCompat.getInsetsController(window, window.getDecorView());
-        controller.setAppearanceLightStatusBars(true);
-        controller.setAppearanceLightNavigationBars(true);
     }
 }

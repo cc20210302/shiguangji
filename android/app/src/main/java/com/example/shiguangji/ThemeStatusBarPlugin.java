@@ -15,20 +15,15 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-/**
- * Paints the Android status-bar strip without changing WebView measurement.
- * Android 14 and below use Window.statusBarColor. Android 15+ enforces
- * edge-to-edge, so a fixed-height, non-interactive view is placed at the top
- * of DecorView. Updating its color never changes its layout parameters.
- */
 @CapacitorPlugin(name = "ThemeStatusBar")
 public class ThemeStatusBarPlugin extends Plugin {
-    // 🌟 删除了 String 类型的 TAG 定义
-
     private FrameLayout decorView;
     private View statusBarScrim;
     private ViewTreeObserver.OnGlobalLayoutListener layoutListener;
     private int lastInsetHeight = -1;
+
+    // 🌟 修复：用一个固定的 ID 作为 Tag 键，避免 String 转 int 报错
+    private static final int SCRIM_TAG_ID = 0x7f000001;
 
     @PluginMethod
     public void setBackgroundColor(PluginCall call) {
@@ -54,17 +49,11 @@ public class ThemeStatusBarPlugin extends Plugin {
         getActivity().runOnUiThread(() -> {
             try {
                 Window window = getActivity().getWindow();
-                if (Build.VERSION.SDK_INT < 35) {
-                    // Native system status bar background on Android 7-14.
-                    window.setStatusBarColor(color);
-                } else {
-                    // Android 15/16 ignores statusBarColor for edge-to-edge apps.
-                    // Keep the system bar transparent and paint its inset strip.
-                    window.setStatusBarColor(Color.TRANSPARENT);
-                    ensureStatusBarScrim(window);
-                    statusBarScrim.setBackgroundColor(color);
-                    updateScrimHeight();
-                }
+                // Android 15+ 强制透明，我们自己在顶层画色块
+                window.setStatusBarColor(Color.TRANSPARENT);
+                ensureStatusBarScrim(window);
+                statusBarScrim.setBackgroundColor(color);
+                updateScrimHeight();
 
                 JSObject result = new JSObject();
                 result.put("color", value);
@@ -79,38 +68,34 @@ public class ThemeStatusBarPlugin extends Plugin {
         if (statusBarScrim != null) return;
 
         View decor = window.getDecorView();
-        if (!(decor instanceof FrameLayout)) {
-            throw new IllegalStateException("Android DecorView is not a FrameLayout");
-        }
+        if (!(decor instanceof FrameLayout)) return;
 
         decorView = (FrameLayout) decor;
 
-        // 🌟 核心修复：使用无参的 getTag() 获取标签，解决类型不兼容报错
-        Object existing = decorView.getTag();
+        // 🌟 使用固定的 int ID 获取标签
+        Object existing = decorView.getTag(SCRIM_TAG_ID);
         if (existing instanceof View) {
             statusBarScrim = (View) existing;
         } else {
             statusBarScrim = new View(getActivity());
-            // 🌟 核心修复：使用无参的 setTag() 设置标签
-            statusBarScrim.setTag(statusBarScrim);
+            // 🌟 设置标签
+            statusBarScrim.setTag(SCRIM_TAG_ID, statusBarScrim);
 
             statusBarScrim.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             statusBarScrim.setClickable(false);
             statusBarScrim.setFocusable(false);
-            statusBarScrim.setElevation(dp(32));
+            statusBarScrim.setElevation(dp(32)); // 确保层级最高
 
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     Math.max(1, getStatusBarInsetHeight()),
                     Gravity.TOP
             );
-            // Add as a fixed-size sibling above the WebView. FrameLayout's
-            // parent size remains unchanged; this view cannot consume content space.
             decorView.addView(statusBarScrim, params);
             statusBarScrim.bringToFront();
 
-            // 🌟 核心修复：使用无参的 setTag() 保存标签
-            decorView.setTag(statusBarScrim);
+            // 🌟 保存标签
+            decorView.setTag(SCRIM_TAG_ID, statusBarScrim);
         }
 
         lastInsetHeight = -1;
@@ -124,8 +109,7 @@ public class ThemeStatusBarPlugin extends Plugin {
         if (decorView == null || statusBarScrim == null) return;
 
         int height = getStatusBarInsetHeight();
-        if (height <= 0) return;
-        if (height == lastInsetHeight) return;
+        if (height <= 0 || height == lastInsetHeight) return;
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) statusBarScrim.getLayoutParams();
         params.width = FrameLayout.LayoutParams.MATCH_PARENT;
@@ -144,7 +128,7 @@ public class ThemeStatusBarPlugin extends Plugin {
                 if (top > 0) return top;
             }
         }
-
+        // 兜底：获取系统自带的状态栏高度资源
         int resourceId = getActivity().getResources().getIdentifier(
                 "status_bar_height", "dimen", "android"
         );

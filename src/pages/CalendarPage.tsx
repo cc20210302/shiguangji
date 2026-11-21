@@ -1,5 +1,5 @@
 import { useState, useEffect,useMemo  } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useNavigationType  } from 'react-router-dom'
 import { EventCard } from '../components/EventCard'
 import { CalendarStampArt } from '../components/Illustrations'
 import { IconChevronLeft, IconChevronRight } from '../components/Icons'
@@ -25,19 +25,28 @@ const MONTHS = ['一月', '二月', '三月', '四月', '五月', '六月', '七
 
 export default function CalendarPage() {
   const navigate = useNavigate()
+  const navType = useNavigationType() // 🌟 获取当前的导航类型 (POP / PUSH / REPLACE)
   const { events } = useEvents()
 
-  // 🌟 核心修改 1：初始化 selected，优先从本地存储读取
-  const [selected, setSelected] = useState(() => {
-    const saved = localStorage.getItem('calendar-selected-date')
-    if (saved) {
-      const parsed = parseISODate(saved)
-      if (parsed instanceof Date && !isNaN(parsed.getTime())) {
-        return parsed
+  // 🌟 核心修改：根据导航来源决定初始日期
+    const [selected, setSelected] = useState(() => {
+      // 1. 如果是通过点击底部导航栏过来的（PUSH 动作），强制重置为今天
+      if (navType === 'PUSH') {
+        return new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate())
       }
-    }
-    return new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate())
-  })
+  
+      // 2. 如果是通过详情页返回的（POP 动作），尝试读取本地缓存
+      const saved = localStorage.getItem('calendar-selected-date')
+      if (saved) {
+        const parsed = parseISODate(saved)
+        if (parsed instanceof Date && !isNaN(parsed.getTime())) {
+          return parsed
+        }
+      }
+  
+      // 3. 兜底：如果没有缓存，默认今天
+      return new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate())
+    })
 
   // 🌟 核心修改 2：cursor（当前月份）根据 selected 初始化
   const [cursor, setCursor] = useState(

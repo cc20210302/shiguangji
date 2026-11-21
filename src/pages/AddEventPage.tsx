@@ -15,20 +15,16 @@ export default function AddEventPage() {
   const active = isCategory(category) ? category : 'birthday'
   const { draft, patchDraft } = useEvents()
 
+  // 🌟 核心修复：将依赖项改为空数组 []，强制页面一进入就固定为米色，不再受 active 影响
   useEffect(() => {
-    const statusBarColors: Record<string, string> = {
-      birthday: '#DCEBDD',
-      other: '#DCEBDD',
-      anniversary: '#F8DFE0',
-      festival: '#F9E6D8',
-    }
-    void updateAppTheme(statusBarColors[active] || '#F8F7F2')
-  }, [active])
+    void updateAppTheme('#f8f7f2')
+  }, [])
 
   // 当 URL 里的分类变化时（如用户手动切换顶部标签），同步更新全局草稿里的分类
   useEffect(() => {
     if (draft.category !== active) patchDraft({ category: active })
   }, [active, draft.category, patchDraft])
+
   return (
     <PageShell>
       <AddEventForm />

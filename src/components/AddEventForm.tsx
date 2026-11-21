@@ -83,6 +83,24 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
       <SegmentedTabs value={draft.category} onChange={handleCategory} />
 
       <div className="fields">
+	  {/* 🌟 修改：把 onClick 移到内部 div，并让内容行横向撑满 */}
+	  <FieldCard label="日期" icon={<IconDate size={20} />}>
+	    <div
+	      onClick={() => navigate('/date-picker')}
+	      style={{
+	        display: 'flex',
+	        justifyContent: 'space-between',
+	        alignItems: 'center',
+	        width: '100%',
+	        cursor: 'pointer',
+	      }}
+	    >
+	      {toISODate(parseISODate(draft.date))}
+	      <span className="field__caret" style={{ float: 'none', margin: 0 }}>
+	        <IconChevronDown size={16} />
+	      </span>
+	    </div>
+	  </FieldCard>
         <FieldCard label="事件名称" icon={<IconTag size={20} />}>
           <input
             className="field__input"
@@ -92,25 +110,6 @@ export function AddEventForm({ backdrop = false }: AddEventFormProps) {
             onChange={handleTitleChange}
             tabIndex={backdrop ? -1 : undefined}
           />
-        </FieldCard>
-
-        {/* 🌟 修改：把 onClick 移到内部 div，并让内容行横向撑满 */}
-        <FieldCard label="日期" icon={<IconDate size={20} />}>
-          <div
-            onClick={() => navigate('/date-picker')}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              cursor: 'pointer',
-            }}
-          >
-            {toISODate(parseISODate(draft.date))}
-            <span className="field__caret" style={{ float: 'none', margin: 0 }}>
-              <IconChevronDown size={16} />
-            </span>
-          </div>
         </FieldCard>
 
         <FieldCard

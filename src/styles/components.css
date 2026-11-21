@@ -628,15 +628,7 @@
 }
 
 /* ─────────────────────────  详情页  ───────────────────────── */
-.detail-bg {
-	position: absolute;
-	inset: 0 0 auto;
-	height: 319px;
-	/* 🌟 改成读取变量，默认取 mint */
-	background: var(--theme-bg, var(--mint));
-	z-index: 0;
-	/* 加个平滑过渡动画 */
-}
+
 
 .detail-sticker {
 	position: relative;

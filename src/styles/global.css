@@ -12,7 +12,7 @@ body,
   width: 100%;
   height: 100%;
   /* WebView 根背景固定，页面主题只作用于局部内容 */
-  background-color: #f8f7f2;
+  background-color: #f8f7f2; 
   overflow: hidden; 
 }
 
@@ -106,7 +106,7 @@ ul {
   flex-direction: column;
   overflow: hidden; 
   /* 固定页面承载层背景，禁止随路由切换全局改色 */
-  background-color: #f8f7f2;
+  background-color:  var(--app-bg-color, #f8f7f2);
 }
 
 /* 🚨 已删除 .phone::before 遮挡层 */
@@ -143,10 +143,10 @@ ul {
 /* 详情页的顶部背景层 */
 .detail-bg {
   position: absolute;
-  top: 0; /* 🌟 去掉负数 top */
+  top: 0;
   left: 0;
   right: 0;
-  height: 319px; /* 🌟 恢复原有高度 */
+   height: 319px;
   background: var(--theme-bg, var(--mint)); 
   z-index: 0;
 }
